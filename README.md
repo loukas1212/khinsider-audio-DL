@@ -1,20 +1,17 @@
-# khinsider-mp3-downloader
+# Khinsider Audio DL - Fork
 
-A script to crawl `http://downloads.khinsider.com/` for game soundtracks and download them. Downloads will be placed inside a `/downloads` directory inside the repo. Individual directories for each album will be generated automatically off the url name.
+A Fork of Khinsider MP3 Downloader by Trash (https://github.com/trash/khinsider-mp3-downloader)
 
-## Install
-The only thing you need to install is python3: https://www.python.org/downloads/
+This fork add :
 
-Tested and working with python 3.8.
+- User Agent
+- Compatibility with new python version (Tested on Python 3.14.6, on macOS 26.6.1)
+- Fixed the 403's error issue
+- Better error handling and log
+- Adding color on log (using Colorama)
 
-## How To Use
+---
 
-### `inputs.txt`
+To use the script, put your URL in `inputs.txt` and launch `python3 downloader.py`
 
-Update the `inputs.txt` in the repo with a list of links, one link per line, and then run the script `$ python3 downloader.py`.
-The repo includes a properly formatted `inputs.txt` for reference.
-
-### Input A URL Via CLI
-
-If you'd prefer to manually enter URLs you can delete `inputs.txt` and then simply run `$ python3 downloader.py` from inside the repo and enter a link like 'http://downloads.khinsider.com/game-soundtracks/album/disgaea-3-raspberyl' (including the quotes) when prompted in the command line and hit enter.
-
+To create a VENV and install requirements, please do `python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt`
