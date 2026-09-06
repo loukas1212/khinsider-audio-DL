@@ -14,4 +14,6 @@ This fork add :
 
 To use the script, put your URL in `inputs.txt` and launch `python3 downloader.py`
 
+Or, if you don't want to use `inputs.txt`, just run `python3 downloader.py -u "urlhere"`
+
 To create a VENV and install requirements, please do `python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt`

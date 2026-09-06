@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 import time
@@ -143,7 +144,26 @@ def fetch_from_url(url):
         time.sleep(0.5)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Downloads an album from downloads.khinsider.com'
+    )
+    parser.add_argument(
+        '-u', '--url',
+        type=str,
+        default=None,
+        help='URL of the khinsider album page to download (e.g. -u "https://downloads.khinsider.com/game-soundtracks/album/..." )'
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+
+    if args.url:
+        fetch_from_url(args.url)
+        return
+
     input_file_name = 'inputs.txt'
     if os.path.exists(input_file_name):
         print(Fore.BLUE + 'Input file found. Parsing for links...' + Style.RESET_ALL)
