@@ -6,6 +6,8 @@ import requests
 from bs4 import BeautifulSoup
 from colorama import Fore, Style, init
 
+init(autoreset=True)
+
 BASE_URL = 'https://downloads.khinsider.com'
 
 HEADERS = {
@@ -41,13 +43,13 @@ def get_soup(url):
 def fetch_from_url(url):
     url = url.strip()
     if not url:
-        print(Fore.RED + "No URL found in inputs.txt" + Style.RESET_ALL)
+        print(Fore.RED + "No URL found in inputs.txt")
         return
 
     if not validate_url(url):
-        print(Fore.RED + 'URL is invalid : ' + url + Style.RESET_ALL)
+        print(Fore.RED + 'URL is invalid : ' + url)
         return
-    print(Fore.GREEN + 'URL found: ' + url + Style.RESET_ALL)
+    print(Fore.GREEN + 'URL found: ' + url)
 
     base_dir = 'downloads'
     url_parts = url.rstrip('/').split('/')
@@ -55,17 +57,17 @@ def fetch_from_url(url):
 
     os.makedirs(dir_name, exist_ok=True)
 
-    print(Fore.GREEN + 'Crawling for links, Please wait...' + Style.RESET_ALL)
+    print(Fore.GREEN + 'Crawling for links, Please wait...')
 
     try:
         soup = get_soup(url)
     except requests.RequestException as e:
-        print(Fore.RED + 'Failed to load album page : ' + str(e) + Style.RESET_ALL)
+        print(Fore.RED + 'Failed to load album page : ' + str(e))
         return
 
     song_list = soup.find(id='songlist')
     if song_list is None:
-        print(Fore.RED + 'Could not find song list on page. Please double check the url.' + Style.RESET_ALL)
+        print(Fore.RED + 'Could not find song list on page. Please double check the url.')
         return
 
     anchors = song_list.find_all('a')
@@ -82,10 +84,10 @@ def fetch_from_url(url):
                 song_map[full_href] = name
 
     if not song_map:
-        print(Fore.RED + 'No links found for the url. Please double check that the url is correct and try again.' + Style.RESET_ALL)
+        print(Fore.RED + 'No links found for the url. Please double check that the url is correct and try again.')
         return
 
-    print(Fore.GREEN + str(len(song_map)) + ' Links acquired' + Style.RESET_ALL)
+    print(Fore.GREEN + str(len(song_map)) + ' Links acquired')
 
     downloaded_mp3s = {}
 
@@ -93,12 +95,12 @@ def fetch_from_url(url):
         try:
             link_soup = get_soup(href)
         except requests.RequestException as e:
-            print(Fore.RED + 'Failed to load song page for "' + str(song_name) + '": ' + str(e) + Style.RESET_ALL)
+            print(Fore.RED + 'Failed to load song page for "' + str(song_name) + '": ' + str(e))
             continue
 
         audio = link_soup.find('audio')
         if audio is None or not audio.get('src'):
-            print(Fore.RED + 'No audio source found for "' + str(song_name) + '"' + Style.RESET_ALL)
+            print(Fore.RED + 'No audio source found for "' + str(song_name) + '"')
             continue
 
         mp3_url = audio.get('src')
@@ -122,10 +124,10 @@ def fetch_from_url(url):
             file_already_downloaded = round(float(stat.st_size) / 1000000, 2) == round(file_size, 2)
 
         if file_already_downloaded:
-            print(Fore.BLUE + 'Skipping "' + file_name + '" already downloaded.' + Style.RESET_ALL)
+            print(Fore.BLUE + 'Skipping "' + file_name + '" already downloaded.')
             continue
 
-        print(Fore.BLUE + 'Downloading ' + file_name + (' [%.2fMB]' % file_size if file_size else '') + Style.RESET_ALL)
+        print(Fore.BLUE + 'Downloading ' + file_name + (' [%.2fMB]' % file_size if file_size else ''))
 
         try:
             with SESSION.get(mp3_url, timeout=30, stream=True) as r:
@@ -134,9 +136,9 @@ def fetch_from_url(url):
                     for chunk in r.iter_content(chunk_size=8192):
                         if chunk:
                             output.write(chunk)
-            print(Fore.GREEN +'Download finished for "' + file_name + '"' + Style.RESET_ALL)
+            print(Fore.GREEN + 'Download finished for "' + file_name + '"')
         except requests.RequestException as e:
-            print(Fore.RED + 'Failed to download "' + file_name + '": ' + str(e) + Style.RESET_ALL)
+            print(Fore.RED + 'Failed to download "' + file_name + '": ' + str(e))
             if os.path.exists(file_on_disk_path):
                 os.remove(file_on_disk_path)
 
@@ -166,13 +168,13 @@ def main():
 
     input_file_name = 'inputs.txt'
     if os.path.exists(input_file_name):
-        print(Fore.BLUE + 'Input file found. Parsing for links...' + Style.RESET_ALL)
+        print(Fore.BLUE + 'Input file found. Parsing for links...')
         with open(input_file_name, 'r') as file:
             for line in file:
                 fetch_from_url(line)
     else:
-        print(Fore.BLUE + "No inputs.txt file found." + Style.RESET_ALL)
-        print(Fore.BLUE + 'Please input link in quotes to album on khinsider.' + Style.RESET_ALL)
+        print(Fore.BLUE + "No inputs.txt file found.")
+        print(Fore.BLUE + 'Please input link in quotes to album on khinsider.')
         url = input('Url: ')
         fetch_from_url(url)
 
